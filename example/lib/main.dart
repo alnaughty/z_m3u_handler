@@ -31,11 +31,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late final ZM3UHandler _handler = ZM3UHandler.instance;
+  CategorizedM3UData? _display;
   int val = 0;
   Future n() async {
     print("DOWN");
-    await _handler.file(
-      "/data/user/0/com.example.example/files/M3UDATA/data.m3u",
+    await _handler.network(
+      "https://iptv-org.github.io/iptv/countries/fr.m3u",
+      // "/data/user/0/com.example.example/files/M3UDATA/data.m3u",
       // "http://infinity-ott.com:8080/get.php?username=RY05xSsev4z7BRQc&password=qSwUcugDcsgxQQ9s&type=m3u_plus&output=mpegts",
       (value) {
         print("DOWNLOADING $value%");
@@ -49,6 +51,11 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<void> _r() async {
+    await _handler.savedData.then((v) => setState(() => _display = v));
+    print(_display);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,12 +63,25 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(child: Text("$val%")),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await n();
-        },
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      floatingActionButton: SafeArea(
+        child: Row(
+          children: [
+            FloatingActionButton(
+              onPressed: () async {
+                await n();
+              },
+              tooltip: 'Increment',
+              child: const Icon(Icons.add),
+            ),
+            FloatingActionButton(
+              onPressed: () async {
+                await _r();
+              },
+              tooltip: 'Increment',
+              child: const Icon(Icons.minimize),
+            ),
+          ],
+        ),
       ),
     );
   }
