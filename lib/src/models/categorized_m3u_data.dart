@@ -7,4 +7,12 @@ class CategorizedM3UData {
 
   const CategorizedM3UData(
       {required this.live, required this.movies, required this.series});
+
+  @override
+  String toString() => "${toJson()}";
+  Map<String, dynamic> toJson() => {
+        "series": series,
+        "movies": movies,
+        "live": live,
+      };
 }

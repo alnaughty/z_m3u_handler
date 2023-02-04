@@ -88,6 +88,14 @@ class M3uEntry {
         "type": type,
         "attributes": attributes,
       };
+
+  Map<String, dynamic> toDBObj() => {
+        "title": title,
+        "link": link,
+        "duration": duration,
+        "image": attributes['tvg-logo'] ?? "",
+        "type": type,
+      };
   Map<String, dynamic> toFireObj() => {
         "name": title,
         "url": link,

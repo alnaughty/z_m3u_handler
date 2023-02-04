@@ -64,30 +64,20 @@ class M3uParser {
   }
 
   EntryInfo _regexParse(String line) {
-    final RegExp firstNumber = RegExp("-?(\\d+)");
-    final String? match = firstNumber.allMatches(line).first.group(0);
     final regexExpression = RegExp(r' (.*?)=\"(.*?)"|,(.*)');
     final matches = regexExpression.allMatches(line);
     final attributes = <String, String?>{};
     String? title = '';
-    final int duration = match != null ? int.parse(match) : -1;
 
-    for (var match in matches) {
+    matches.forEach((match) {
       if (match[1] != null && match[2] != null) {
         attributes[match[1]!] = match[2];
       } else if (match[3] != null) {
         title = match[3];
       } else {
         print('ERROR regexing against -> ${match[0]}');
-        throw InvalidFormatException(
-          InvalidFormatType.other,
-        );
       }
-    }
-    return EntryInfo(
-      title: title!,
-      attributes: attributes,
-      duration: duration,
-    );
+    });
+    return EntryInfo(title: title!, attributes: attributes, duration: -1);
   }
 }

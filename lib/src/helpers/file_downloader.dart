@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -21,13 +20,10 @@ class FileDownloader {
 
       if (!(await downloadDir.exists())) return null;
       print(url.replaceAll("http://", ""));
-      // final String _path =
-      //     "${await path}/${DateTime.now().millisecondsSinceEpoch}";
       return await _dio
           .downloadUri(Uri.parse(url), "${downloadDir.path}/data.m3u",
               onReceiveProgress: (int received, int total) {
         if (total != -1) {
-          // print(.toStringAsFixed(0) + "%");
           downloadProgress(
             double.parse(
               (received / total * 100).floor().toString(),
@@ -35,8 +31,6 @@ class FileDownloader {
           );
         }
       }).then((response) async {
-        // Map data = response.data;
-        // print("DATA : ${data}");
         if (response.statusCode == 200) {
           File ff = File("${downloadDir.path}/data.m3u");
           print(ff.path);

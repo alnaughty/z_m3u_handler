@@ -5,20 +5,11 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:z_m3u_handler/extension.dart';
+import 'package:z_m3u_handler/src/helpers/db_regx.dart';
 import 'package:z_m3u_handler/src/models/categorized_m3u_data.dart';
 import '../models/m3u_entry.dart';
 
-class DBHandler {
-  final RegExp season = RegExp(
-    r"((\b(s|S))(\d+))|((\b(season|SEASON|Season))((\d+)|( \d+)))",
-    multiLine: true,
-  );
-
-  final RegExp episode = RegExp(
-      r"((\b(e|E))(\d+))|((\b(episode|EPISODE|Episode|ep|EP|Ep))((\d+)|( \d+)))");
-  final epAndSe = RegExp(
-    r"\b(s|S|SEASON|season|Season)(\d+(E|e|EPISODE|episode|Episode(\d+)))",
-  );
+class DBHandler with DBRegX {
   DBHandler._pr();
   static final DBHandler _instance = DBHandler._pr();
   static Database? _database;
@@ -27,7 +18,7 @@ class DBHandler {
 
   Future<Database> _initDB() async {
     Directory documentsDir = await getApplicationDocumentsDirectory();
-    String path = join(documentsDir.path, "default.db");
+    String path = join(documentsDir.path, "m3u.db");
 
     return await openDatabase(
       path,
@@ -40,7 +31,7 @@ class DBHandler {
     await db.execute(
         'CREATE TABLE categories(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)');
     await db.execute(
-        'CREATE TABLE entries(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, url TEXT NOT NULL, duration INTEGER NULL, image TEXT NULL, category_id INT NOT NULL, type INT NOT NULL, FOREIGN KEY (category_id) REFERENCES categories (id))');
+        'CREATE TABLE entries(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, link TEXT NOT NULL, duration INTEGER NULL, image TEXT NULL, category_id INT NOT NULL, type INT NOT NULL, FOREIGN KEY (category_id) REFERENCES categories (id))');
   }
 
   Future<void> clearTable() async {
@@ -52,17 +43,21 @@ class DBHandler {
     // await db.rawDelete("DELETE * FROM entries");
   }
 
-  Future<int> addEntry(int categoryID, M3uEntry entry) async {
+  Future<int> addEntry(int catId, M3uEntry entry) async {
     try {
       final Database db = await instance.database;
-      Map<String, dynamic> data = entry.toJson();
+      Map<String, dynamic> data = entry.toDBObj();
       data.addAll({
-        "category_id": categoryID,
+        "category_id": catId,
       });
       if (entry.link.isNotEmpty) {
         int type = entry.link.getType;
         if (type == 0 || type == 1) {
           print("LIVE FOUND!");
+        } else if (type == 2) {
+          print("SERIES FOUND!");
+        } else {
+          print("MOVIE FOUND!");
         }
         data.addAll({
           "type": type,
@@ -79,13 +74,21 @@ class DBHandler {
     }
   }
 
+  Future<int> addCategory(String name) async {
+    try {
+      final Database db = await instance.database;
+      return await db.insert("categories", {
+        "name": name,
+      });
+    } catch (e) {
+      return -1;
+    }
+  }
+
   Future<CategorizedM3UData?> getData() async {
     try {
       final Database db = await instance.database;
       final List data = await db.rawQuery("SELECT *  FROM categories");
-      List<M3uEntry> series = [];
-      List<M3uEntry> movies = [];
-      List<M3uEntry> live = [];
       List<M3uEntry> allData = [];
       for (Map<String, dynamic> datum in data) {
         final List e = await db.rawQuery(
@@ -94,12 +97,12 @@ class DBHandler {
         final List<M3uEntry> entry = e
             .map(
               (e) => M3uEntry.fromEntryInformation(
-                link: e['url'],
+                link: e['link'],
                 information: EntryInfo(
                   attributes: {
                     "tvg-logo": e['image'],
-                    "group-title": datum['name'],
-                    "title-clean": e['name']
+                    "group-title": datum['title'],
+                    "title-clean": e['title']
                         .toString()
                         .replaceAll(season, "")
                         .replaceAll(episode, "")
@@ -107,7 +110,7 @@ class DBHandler {
                         .trim(),
                   },
                   duration: e['duration'],
-                  title: e['name'],
+                  title: e['title'],
                 ),
                 type: e['type'] ?? 0,
               ),
@@ -116,95 +119,14 @@ class DBHandler {
         allData += entry;
         // series = __data.categorizeType(3);
       }
-      print(allData);
+      return CategorizedM3UData(
+        live: allData.where((element) => element.type <= 1).toList(),
+        movies: allData.where((element) => element.type == 2).toList(),
+        series: allData.where((element) => element.type == 3).toList(),
+      );
     } catch (e) {
       print("ERROR FETCHING DATA FROM DB");
       return null;
     }
   }
-
-  // List<M3uEntry> categorizeBy(List<M3uEntry> data, int type) {
-  //   return data.where((element) => element.type == type).toList();
-  //   // final Map<String, List<M3uEntry>> series =
-  //   //     folder(data.where((element) => element.type.toInt() == 3).toList());
-  //   // final Map<String, List<M3uEntry>> movies = folder(
-  //   //   data.where((element) => element.type.toInt() == 2).toList(),
-  //   // );
-  //   // final Map<String, List<M3uEntry>> lives = folder(
-  //   //   data
-  //   //       .where((element) =>
-  //   //           element.type.toInt() != 2 && element.type.toInt() != 3)
-  //   //       .toList(),
-  //   // );
-  //   // return [
-  //   //   series,
-  //   //   movies,
-  //   //   lives,
-  //   // ];
-  // }
-
-  // Future<void> categorizeData() async {
-  //   final Database db = await instance.database;
-  //   final List data = await db.rawQuery("SELECT *  FROM categories");
-  //   final List<M3UCategorized> ff = [];
-  //   for (Map<String, dynamic> datum in data) {
-  // final List e = await db.rawQuery(
-  //     "SELECT *  FROM entries WHERE category_id = ${datum['id']}");
-  // List<M3uEntry> _data = e
-  //     .map(
-  //       (e) => M3uEntry.fromEntryInformation(
-  //         link: e['url'],
-  //         information: EntryInfo(
-  //           attributes: {
-  //             "tvg-logo": e['image'],
-  //             "group-title": datum['name'],
-  //             "title-clean": e['name']
-  //                 .toString()
-  //                 .replaceAll(season, "")
-  //                 .replaceAll(episode, "")
-  //                 .replaceAll(epAndSe, "")
-  //                 .trim(),
-  //           },
-  //           duration: e['duration'],
-  //           title: e['name'],
-  //         ),
-  //         type: e['type'] ?? 0,
-  //       ),
-  //     )
-  //     .toList();
-  //     List<Map<String, List<M3uEntry>>> _dd = categorizeBy(_data);
-  //     final List<Series> moviesCategorized = _dd[1]
-  //         .entries
-  //         .map((e) => Series(
-  //             title: e.key,
-  //             entries: e.value
-  //                 .map((e) => M3uParsedEntry.fromJson(e.toJson()))
-  //                 .toList()))
-  //         .toList();
-
-  //     final List<Series> seriesCategorized = _dd[0]
-  //         .entries
-  //         .map((e) => Series(
-  //             title: e.key,
-  //             entries: e.value
-  //                 .map((e) => M3uParsedEntry.fromJson(e.toJson()))
-  //                 .toList()))
-  //         .toList();
-  //     // final List<M3uParsedEntry> liveCategorized = _dd[2]
-  //     //     .entries
-  //     //     .map((e) => M3uParsedEntry.fromJson(e.toJson()))
-  //     //     .toList();
-  //     ff.add(
-  //       M3UCategorized.withData(
-  //         title: datum['name'],
-  //         series: seriesCategorized,
-  //         movies: moviesCategorized,
-  //         lives: _data.where((element) => element.type.toInt() <= 1).toList(),
-  //       ),
-  //     );
-  //   }
-  //   print("NOT EMPTY LIVE: ${ff.where((element) => element.lives.isNotEmpty)}");
-  //   _mainData.populateAll(ff);
-  //   return;
-  // }
 }
