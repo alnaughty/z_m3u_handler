@@ -1,14 +1,51 @@
+import 'package:z_m3u_handler/src/firebase/firestore_services.dart';
 import 'package:z_m3u_handler/src/models/entry_info.dart';
 export 'package:z_m3u_handler/src/models/entry_info.dart';
 
 class M3uEntry {
+  static final M3uFirestoreServices _fserve = M3uFirestoreServices();
   M3uEntry({
     required this.title,
     required this.attributes,
     required this.link,
     required this.duration,
+    required this.type,
   });
 
+  ///refId is representation of userId
+  void addToFavorites(String refId) async {
+    await _fserve.appendDataIn(
+      this,
+      collection: "user-favorites",
+      refId: refId,
+    );
+  }
+
+  void removeFromFavorites(String refId) async {
+    await _fserve.removeDataIn(
+      this,
+      collection: "user-favorites",
+      refId: refId,
+    );
+  }
+
+  void addToHistory(String refId) async {
+    await _fserve.appendDataIn(
+      this,
+      collection: "user-history",
+      refId: refId,
+    );
+  }
+
+  void removeFromHistory(String refId) async {
+    await _fserve.removeDataIn(
+      this,
+      collection: "user-history",
+      refId: refId,
+    );
+  }
+
+  ///
   factory M3uEntry.fromEntryInformation(
           {required EntryInfo information,
           required String link,
@@ -18,16 +55,19 @@ class M3uEntry {
         duration: information.duration,
         attributes: information.attributes,
         link: link,
+        type: type,
       );
 
-  factory M3uEntry.fromJson(Map<String, dynamic> json) {
-    return M3uEntry(
-      title: json['title'],
-      duration: json['duration'],
-      attributes: json['attributes'],
-      link: json['link'],
-    );
-  }
+  // factory M3uEntry.fromJson(Map<String, dynamic> json) {
+  //   final String link = json['link'];
+  //   return M3uEntry(
+  //     title: json['title'],
+  //     duration: json['duration'],
+  //     attributes: json['attributes'],
+  //     link: json['link'],
+  //     type: link.getType,
+  //   );
+  // }
 
   String title;
 
@@ -36,6 +76,7 @@ class M3uEntry {
   String link;
 
   int duration;
+  int type;
 
   @override
   String toString() => '${toJson()}';
@@ -44,6 +85,13 @@ class M3uEntry {
         "title": title,
         "link": link,
         "duration": duration,
+        "type": type,
         "attributes": attributes,
+      };
+  Map<String, dynamic> toFireObj() => {
+        "name": title,
+        "url": link,
+        "duration": duration,
+        "image": attributes['tvg-logo'] ?? "",
       };
 }

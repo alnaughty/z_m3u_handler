@@ -13,4 +13,38 @@ extension SORTER on List<M3uEntry> {
       return acc;
     });
   }
+
+  List<M3uEntry> categorizeType(int type) =>
+      where((element) => element.type == type).toList();
+}
+
+extension STR on String {
+  bool containsUrl(String url, String needle) =>
+      url.contains(needle) || url.contains("${needle}s");
+  int get getType {
+    final String finUrl = toLowerCase();
+    if (containsUrl(finUrl, "movie")) {
+      return 2;
+    } else if (containsUrl(finUrl, "serie")) {
+      return 3;
+    } else if (containsUrl(finUrl, "live")) {
+      return 1;
+    }
+    return 1;
+  }
+}
+
+extension INT on int {
+  String get contentStringify {
+    switch (this) {
+      case 2:
+        return "movie";
+      case 3:
+        return "series";
+      case 1:
+        return "live";
+      default:
+        return "live";
+    }
+  }
 }

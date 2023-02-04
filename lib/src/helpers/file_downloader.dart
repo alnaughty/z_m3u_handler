@@ -49,7 +49,7 @@ class FileDownloader {
       print("HTTP ERROR : $e");
       return null;
     } on DioError catch (e) {
-      print("ERROR : $e");
+      print("ERROR : ${e.error}");
       return null;
     } on SocketException catch (e) {
       print("NO INTERNET! : $e");

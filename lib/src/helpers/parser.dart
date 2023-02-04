@@ -1,3 +1,4 @@
+import 'package:z_m3u_handler/extension.dart';
 import 'package:z_m3u_handler/src/exports.dart';
 
 class M3uParser {
@@ -37,8 +38,13 @@ class M3uParser {
           _parseLine(line);
           break;
         }
-        _playlist.add(M3uEntry.fromEntryInformation(
-            information: _currentInfoEntry!, link: line));
+        _playlist.add(
+          M3uEntry.fromEntryInformation(
+            information: _currentInfoEntry!,
+            link: line,
+            type: line.toString().getType,
+          ),
+        );
         _currentInfoEntry = null;
         _nextLineExpected = LineParsedType.info;
         break;

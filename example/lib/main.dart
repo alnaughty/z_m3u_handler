@@ -34,9 +34,9 @@ class _MyHomePageState extends State<MyHomePage> {
   int val = 0;
   Future n() async {
     print("DOWN");
-    await _handler.network(
-      "http://infinity-ott.com:8080/get.php?username=RY05xSsev4z7BRQc&password=qSwUcugDcsgxQQ9s&type=m3u_plus&output=mpegts",
-      // "/data/user/0/com.example.example/app_flutter/M3U_DATA/data.m3u",
+    await _handler.file(
+      "/data/user/0/com.example.example/files/M3UDATA/data.m3u",
+      // "http://infinity-ott.com:8080/get.php?username=RY05xSsev4z7BRQc&password=qSwUcugDcsgxQQ9s&type=m3u_plus&output=mpegts",
       (value) {
         print("DOWNLOADING $value%");
         val = value.toInt();

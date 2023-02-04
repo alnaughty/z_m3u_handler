@@ -8,10 +8,17 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  cloud_firestore: ^4.3.1
   dio: ^4.0.6
+  firebase_core: ^2.4.1
   flutter:
     sdk: flutter
+  flutter_cache_manager: ^3.3.0
+  path: ^1.8.2
   path_provider: ^2.0.12
+  shared_preferences: ^2.0.17
+  shared_preferences_android: ^2.0.15
+  shared_preferences_ios: ^2.1.1
   sqflite: ^2.2.4+1
 
 dev_dependencies:
