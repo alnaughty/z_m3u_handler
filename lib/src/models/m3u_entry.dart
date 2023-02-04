@@ -45,7 +45,17 @@ class M3uEntry {
     );
   }
 
-  ///
+  factory M3uEntry.fromFirestore(Map<String, dynamic> json, int type) {
+    return M3uEntry(
+      title: json['name'],
+      attributes: {
+        "tvg-logo": json['image'],
+      },
+      link: json['url'],
+      duration: json['duration'].toInt(),
+      type: type,
+    );
+  }
   factory M3uEntry.fromEntryInformation(
           {required EntryInfo information,
           required String link,

@@ -7,7 +7,8 @@ class CategorizedM3UData {
 
   const CategorizedM3UData(
       {required this.live, required this.movies, required this.series});
-
+  factory CategorizedM3UData.empty() =>
+      const CategorizedM3UData(live: [], movies: [], series: []);
   @override
   String toString() => "${toJson()}";
   Map<String, dynamic> toJson() => {

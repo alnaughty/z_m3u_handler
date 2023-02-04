@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:z_m3u_handler/extension.dart';
+import 'package:z_m3u_handler/src/models/categorized_m3u_data.dart';
 import 'package:z_m3u_handler/src/models/m3u_entry.dart';
 
 class M3uFirestoreServices {
@@ -27,24 +28,24 @@ class M3uFirestoreServices {
     }
   }
 
+  // Future<bool> updateEntry(List<M3uEntry> data,
+  //     {required String collection, required String refId}) async {
+  //   try {
+  //     final CollectionReference _data =
+  //         FirebaseFirestore.instance.collection(collection);
+  //     final DocumentSnapshot docu = await _data.doc(refId).get();
+  //     await _data.doc(refId).set({
+  //       "movie": docu.get("movie"),
+  //       "live": docu.get("live"),
+  //       "series": data.map((e) => e.toJson()).toList(),
+  //     });
+  //     return true;
+  //   } catch (e) {
+  //     return false;
+  //   }
+  // }
   /// refId is the same as userId
   /// This can be used in fav or history
-  Future<bool> updateEntry(List<M3uEntry> data,
-      {required String collection, required String refId}) async {
-    try {
-      final CollectionReference _data =
-          FirebaseFirestore.instance.collection(collection);
-      final DocumentSnapshot docu = await _data.doc(refId).get();
-      await _data.doc(refId).set({
-        "movie": docu.get("movie"),
-        "live": docu.get("live"),
-        "series": data.map((e) => e.toJson()).toList(),
-      });
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
 
   Future<bool> appendDataIn(
     M3uEntry entry, {
@@ -68,6 +69,49 @@ class M3uFirestoreServices {
     } catch (e) {
       print("ERROR SAVING DATA TO ${collection.toUpperCase()} : $e");
       return false;
+    }
+  }
+
+  ///can only be used to fetch favorites or history
+
+  Future<CategorizedM3UData?> getDataFrom(String refId,
+      {required String collection}) async {
+    try {
+      if (!(await docExists(refId))) {
+        print("NOT EXIST!");
+        await createFavoriteXHistory(refId);
+        return CategorizedM3UData.empty();
+      }
+      CollectionReference _data =
+          FirebaseFirestore.instance.collection(collection);
+      // final Map<String, dynamic> ff = {};
+      final DocumentSnapshot docu = await _data.doc(refId).get();
+      final Map dataa = docu.data()! as Map;
+      if (dataa.isEmpty) {
+        return CategorizedM3UData.empty();
+      }
+      final List<M3uEntry> _mov = (dataa['movie'] as List)
+          .map(
+            (e) => M3uEntry.fromFirestore(e, 2),
+          )
+          .toList();
+      final List<M3uEntry> _ser = (dataa['series'] as List)
+          .map(
+            (e) => M3uEntry.fromFirestore(e, 3),
+          )
+          .toList();
+      final List<M3uEntry> _live = (dataa['live'] as List)
+          .map(
+            (e) => M3uEntry.fromFirestore(e, 1),
+          )
+          .toList();
+      return CategorizedM3UData(
+        live: _live,
+        movies: _mov,
+        series: _ser,
+      );
+    } catch (e) {
+      return null;
     }
   }
 
