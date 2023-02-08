@@ -14,3 +14,8 @@
 ## 0.0.4
 
 * removed type printer
+
+
+## 0.0.5
+
+* changed String path to File in file function 

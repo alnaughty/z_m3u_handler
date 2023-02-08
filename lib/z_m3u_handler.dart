@@ -39,15 +39,9 @@ class ZM3UHandler {
     }
   }
 
-  Future<List<M3uEntry>> file(
-      String path, ValueChanged<double> progressCallback,
+  Future<List<M3uEntry>> file(File file, ValueChanged<double> progressCallback,
       {VoidCallback? onFinished}) async {
-    final File _file = File(path);
-
-    if (!_file.existsSync()) {
-      _file.createSync();
-    }
-    final String data = await _file.readAsString();
+    final String data = await file.readAsString();
     final List<M3uEntry> _res = await _parse(data);
     await _saveTODB(_res);
     if (onFinished != null) {
