@@ -28,22 +28,6 @@ class M3uFirestoreServices {
     }
   }
 
-  // Future<bool> updateEntry(List<M3uEntry> data,
-  //     {required String collection, required String refId}) async {
-  //   try {
-  //     final CollectionReference _data =
-  //         FirebaseFirestore.instance.collection(collection);
-  //     final DocumentSnapshot docu = await _data.doc(refId).get();
-  //     await _data.doc(refId).set({
-  //       "movie": docu.get("movie"),
-  //       "live": docu.get("live"),
-  //       "series": data.map((e) => e.toJson()).toList(),
-  //     });
-  //     return true;
-  //   } catch (e) {
-  //     return false;
-  //   }
-  // }
   /// refId is the same as userId
   /// This can be used in fav or history
 
@@ -55,10 +39,6 @@ class M3uFirestoreServices {
     try {
       CollectionReference data =
           FirebaseFirestore.instance.collection(collection);
-      // final DocumentSnapshot docu = await data.doc(refId).get();
-      // List ff = await docu.get("data");
-      // ff.add(entry.toJson());
-      // data.doc(refId).update(data)
       await data.doc(refId).set({
         entry.type.contentStringify: FieldValue.arrayUnion([
           entry.toFireObj(),

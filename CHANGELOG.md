@@ -10,3 +10,7 @@
 ## 0.0.3
 
 * added data fetcher for favorites and history
+
+## 0.0.4
+
+* removed type printer

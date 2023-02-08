@@ -52,13 +52,13 @@ class DBHandler with DBRegX {
       });
       if (entry.link.isNotEmpty) {
         int type = entry.link.getType;
-        if (type == 0 || type == 1) {
-          print("LIVE FOUND!");
-        } else if (type == 2) {
-          print("SERIES FOUND!");
-        } else {
-          print("MOVIE FOUND!");
-        }
+        // if (type == 0 || type == 1) {
+        //   print("LIVE FOUND!");
+        // } else if (type == 2) {
+        //   print("SERIES FOUND!");
+        // } else {
+        //   print("MOVIE FOUND!");
+        // }
         data.addAll({
           "type": type,
         });
