@@ -19,3 +19,7 @@
 ## 0.0.5
 
 * changed String path to File in file function 
+
+## 0.0.6
+
+* changed return type to [CategorizedM3u]

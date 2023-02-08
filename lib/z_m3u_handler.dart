@@ -17,7 +17,7 @@ class ZM3UHandler {
   ZM3UHandler._pr();
   static final ZM3UHandler _instance = ZM3UHandler._pr();
   static ZM3UHandler get instance => _instance;
-  Future<List<M3uEntry>> network(
+  Future<CategorizedM3UData?> network(
       String url, ValueChanged<double> progressCallback,
       {VoidCallback? onFinished}) async {
     try {
@@ -25,32 +25,39 @@ class ZM3UHandler {
         url,
         progressCallback,
       );
-      if (_file == null) return [];
+      if (_file == null) return null;
       final String data = await _file.readAsString();
       await _file.delete();
       final List<M3uEntry> _res = await _parse(data);
-      await _saveTODB(_res);
+      await _extract(_res);
       if (onFinished != null) {
         onFinished();
       }
-      return _res;
+      return await savedData;
     } catch (e, s) {
-      return [];
+      return null;
     }
   }
 
-  Future<List<M3uEntry>> file(File file, ValueChanged<double> progressCallback,
+  Future<CategorizedM3UData?> file(
+      File file, ValueChanged<double> progressCallback,
       {VoidCallback? onFinished}) async {
-    final String data = await file.readAsString();
-    final List<M3uEntry> _res = await _parse(data);
-    await _saveTODB(_res);
-    if (onFinished != null) {
-      onFinished();
+    try {
+      final String data = await file.readAsString();
+      final List<M3uEntry> _res = await _parse(data);
+      await _extract(_res);
+      if (onFinished != null) {
+        onFinished();
+      }
+      return await savedData;
+    } catch (e) {
+      return null;
     }
-    return _res;
   }
 
-  Future<void> _saveTODB(List<M3uEntry> data) async {
+  Future<void> _extract(
+    List<M3uEntry> data,
+  ) async {
     try {
       assert(data.isNotEmpty, "DATA RETURNED IS EMPTY");
       await _dbHandler.clearTable();
@@ -61,12 +68,14 @@ class ZM3UHandler {
         int catId = await _dbHandler.addCategory(mentry.key);
 
         final List<M3uEntry> _genEnts = (mentry.value as List<M3uEntry>);
-
+        print(_genEnts);
         for (M3uEntry entry in _genEnts) {
-          await _dbHandler.addEntry(
-            catId,
-            entry,
-          );
+          await _dbHandler
+              .addEntry(
+                catId,
+                entry,
+              )
+              .then((value) => null);
         }
       }
 
