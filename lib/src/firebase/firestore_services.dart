@@ -37,6 +37,10 @@ class M3uFirestoreServices {
     required String refId,
   }) async {
     try {
+      if (!(await docExists(refId))) {
+        print("NOT EXIST!");
+        await createFavoriteXHistory(refId);
+      }
       CollectionReference data =
           FirebaseFirestore.instance.collection(collection);
       await data.doc(refId).set({

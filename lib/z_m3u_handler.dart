@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:z_m3u_handler/extension.dart';
 import 'package:z_m3u_handler/src/databaase/db_handler.dart';
+import 'package:z_m3u_handler/src/firebase/firestore_services.dart';
 import 'package:z_m3u_handler/src/helpers/file_downloader.dart';
 import 'package:z_m3u_handler/src/helpers/parser.dart';
 import 'package:z_m3u_handler/src/models/categorized_m3u_data.dart';
@@ -17,6 +18,7 @@ class ZM3UHandler {
   ZM3UHandler._pr();
   static final ZM3UHandler _instance = ZM3UHandler._pr();
   static ZM3UHandler get instance => _instance;
+  static final M3uFirestoreServices _firestore = M3uFirestoreServices();
   Future<CategorizedM3UData?> network(
     String url,
     ValueChanged<double> progressCallback, {
@@ -99,6 +101,20 @@ class ZM3UHandler {
     }
   }
 
+  ///Fetch data from firestore
+  ///[type] is the collection name
+  ///from firestore database
+  Future<CategorizedM3UData?> getDataFrom({
+    required CollectionType type,
+    required String refId,
+  }) async {
+    return await _firestore.getDataFrom(
+      refId,
+      collection:
+          type == CollectionType.favorites ? "user-favorites" : "user-history",
+    );
+  }
+
   static final FileDownloader _downloader = FileDownloader();
 
   static final M3uParser _parser = M3uParser.instance;
@@ -107,3 +123,5 @@ class ZM3UHandler {
     return await _parser.parse(source);
   }
 }
+
+enum CollectionType { favorites, history }
