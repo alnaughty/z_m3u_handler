@@ -23,3 +23,8 @@
 ## 0.0.6
 
 * changed return type to [CategorizedM3u]
+
+## 0.0.7
+
+* added extraction progress callback
+* fixed minor bugs

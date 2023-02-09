@@ -70,6 +70,7 @@ class DBHandler with DBRegX {
         data,
       );
     } catch (e) {
+      print("ERROR APPENDING DATA");
       return -1;
     }
   }

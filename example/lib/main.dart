@@ -36,18 +36,22 @@ class _MyHomePageState extends State<MyHomePage> {
   Future n() async {
     print("DOWN");
     await _handler.network(
-      "https://iptv-org.github.io/iptv/countries/fr.m3u",
-      // "/data/user/0/com.example.example/files/M3UDATA/data.m3u",
-      // "http://infinity-ott.com:8080/get.php?username=RY05xSsev4z7BRQc&password=qSwUcugDcsgxQQ9s&type=m3u_plus&output=mpegts",
-      (value) {
-        print("DOWNLOADING $value%");
-        val = value.toInt();
-        if (mounted) setState(() {});
-      },
-    ).then((value) {
+        // "https://iptv-org.github.io/iptv/countries/fr.m3u",
+        // "/data/user/0/com.example.example/files/M3UDATA/data.m3u",
+        "http://infinity-ott.com:8080/get.php?username=RY05xSsev4z7BRQc&password=qSwUcugDcsgxQQ9s&type=m3u_plus&output=mpegts",
+        (value) {
+      print("DOWNLOADING $value%");
+      val = value.toInt();
+      if (mounted) setState(() {});
+    }, onExtractionCallback: (d) {
+      print("EXTRACTED : $d%");
+    }).then((value) {
       print("M3u VLAUE: $value");
       val = 0;
       if (mounted) setState(() {});
+    }).onError((error, stackTrace) {
+      print("ERROR : $error");
+      print("Stacktrace : $stackTrace");
     });
   }
 

@@ -18,8 +18,11 @@ class ZM3UHandler {
   static final ZM3UHandler _instance = ZM3UHandler._pr();
   static ZM3UHandler get instance => _instance;
   Future<CategorizedM3UData?> network(
-      String url, ValueChanged<double> progressCallback,
-      {VoidCallback? onFinished}) async {
+    String url,
+    ValueChanged<double> progressCallback, {
+    VoidCallback? onFinished,
+    ValueChanged<double>? onExtractionCallback,
+  }) async {
     try {
       final File? _file = await _downloader.downloadFile(
         url,
@@ -29,7 +32,7 @@ class ZM3UHandler {
       final String data = await _file.readAsString();
       await _file.delete();
       final List<M3uEntry> _res = await _parse(data);
-      await _extract(_res);
+      await _extract(_res, extractionProgressCallback: onExtractionCallback);
       if (onFinished != null) {
         onFinished();
       }
@@ -39,36 +42,34 @@ class ZM3UHandler {
     }
   }
 
-  Future<CategorizedM3UData?> file(
-      File file, ValueChanged<double> progressCallback,
-      {VoidCallback? onFinished}) async {
+  Future<CategorizedM3UData?> file(File file,
+      {required VoidCallback onFinished,
+      ValueChanged<double>? extractionProgressCallback}) async {
     try {
       final String data = await file.readAsString();
       final List<M3uEntry> _res = await _parse(data);
-      await _extract(_res);
-      if (onFinished != null) {
-        onFinished();
-      }
+      await _extract(_res,
+          extractionProgressCallback: extractionProgressCallback);
+      onFinished();
       return await savedData;
     } catch (e) {
       return null;
     }
   }
 
-  Future<void> _extract(
-    List<M3uEntry> data,
-  ) async {
+  Future<void> _extract(List<M3uEntry> data,
+      {ValueChanged<double>? extractionProgressCallback}) async {
     try {
       assert(data.isNotEmpty, "DATA RETURNED IS EMPTY");
       await _dbHandler.clearTable();
       Map<String, List<M3uEntry>> _cats =
           data.categorize(needle: "group-title");
-
+      int i = 0;
       for (MapEntry mentry in _cats.entries) {
         int catId = await _dbHandler.addCategory(mentry.key);
 
         final List<M3uEntry> _genEnts = (mentry.value as List<M3uEntry>);
-        print(_genEnts);
+        // print(_genEnts);
         for (M3uEntry entry in _genEnts) {
           await _dbHandler
               .addEntry(
@@ -77,11 +78,16 @@ class ZM3UHandler {
               )
               .then((value) => null);
         }
+        i += 1;
+        if (extractionProgressCallback != null) {
+          extractionProgressCallback((i / _cats.entries.length) * 100);
+        }
       }
+      i = 0;
 
       return;
     } catch (e, s) {
-      return;
+      rethrow;
     }
   }
 
