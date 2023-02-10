@@ -32,3 +32,7 @@
 ## 0.0.8
 
 * added getter for collection in firestore
+
+## 0.0.9
+
+* added classifier
