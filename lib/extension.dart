@@ -1,3 +1,4 @@
+import 'package:z_m3u_handler/src/models/classified_data.dart';
 import 'package:z_m3u_handler/src/models/m3u_entry.dart';
 
 extension SORTER on List<M3uEntry> {
@@ -16,6 +17,23 @@ extension SORTER on List<M3uEntry> {
 
   List<M3uEntry> categorizeType(int type) =>
       where((element) => element.type == type).toList();
+
+  List<ClassifiedData> classify() {
+    try {
+      Map<String, List<M3uEntry>> folded = categorize(needle: 'title-clean');
+      final List<ClassifiedData> __res = folded.entries
+          .map(
+            (e) => ClassifiedData(
+              name: e.key,
+              data: e.value,
+            ),
+          )
+          .toList();
+      return __res;
+    } catch (e) {
+      return [];
+    }
+  }
 }
 
 extension STR on String {
