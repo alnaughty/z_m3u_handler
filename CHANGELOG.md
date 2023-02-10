@@ -37,3 +37,4 @@
 
 * added classifier
 * export [ClassifiedData] object
+* changed [CategorizedData] return type for movie & series

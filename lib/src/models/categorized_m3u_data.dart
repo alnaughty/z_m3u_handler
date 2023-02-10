@@ -1,8 +1,9 @@
-import 'package:z_m3u_handler/src/models/m3u_entry.dart';
+// import 'package:z_m3u_handler/src/models/m3u_entry.dart';
+import 'package:z_m3u_handler/z_m3u_handler.dart';
 
 class CategorizedM3UData {
-  final List<M3uEntry> series;
-  final List<M3uEntry> movies;
+  final List<ClassifiedData> series;
+  final List<ClassifiedData> movies;
   final List<M3uEntry> live;
 
   const CategorizedM3UData(

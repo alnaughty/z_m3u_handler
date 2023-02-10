@@ -122,8 +122,10 @@ class DBHandler with DBRegX {
       }
       return CategorizedM3UData(
         live: allData.where((element) => element.type <= 1).toList(),
-        movies: allData.where((element) => element.type == 2).toList(),
-        series: allData.where((element) => element.type == 3).toList(),
+        movies:
+            allData.where((element) => element.type == 2).toList().classify(),
+        series:
+            allData.where((element) => element.type == 3).toList().classify(),
       );
     } catch (e) {
       print("ERROR FETCHING DATA FROM DB");

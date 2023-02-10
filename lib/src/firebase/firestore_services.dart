@@ -91,8 +91,8 @@ class M3uFirestoreServices {
           .toList();
       return CategorizedM3UData(
         live: _live,
-        movies: _mov,
-        series: _ser,
+        movies: _mov.classify(),
+        series: _ser.classify(),
       );
     } catch (e) {
       return null;
