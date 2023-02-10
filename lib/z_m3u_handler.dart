@@ -13,6 +13,7 @@ import 'package:z_m3u_handler/src/models/m3u_entry.dart';
 
 export 'package:z_m3u_handler/src/models/m3u_entry.dart';
 export 'package:z_m3u_handler/src/models/categorized_m3u_data.dart';
+export 'package:z_m3u_handler/src/models/classified_data.dart';
 
 class ZM3UHandler {
   ZM3UHandler._pr();

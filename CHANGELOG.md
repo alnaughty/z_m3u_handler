@@ -36,3 +36,4 @@
 ## 0.0.9
 
 * added classifier
+* export [ClassifiedData] object
