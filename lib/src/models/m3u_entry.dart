@@ -13,7 +13,7 @@ class M3uEntry {
   });
 
   ///refId is representation of userId
-  void addToFavorites(String refId) async {
+  Future<void> addToFavorites(String refId) async {
     await _fserve.appendDataIn(
       this,
       collection: "user-favorites",
@@ -21,7 +21,7 @@ class M3uEntry {
     );
   }
 
-  void removeFromFavorites(String refId) async {
+  Future<void> removeFromFavorites(String refId) async {
     await _fserve.removeDataIn(
       this,
       collection: "user-favorites",
@@ -29,7 +29,7 @@ class M3uEntry {
     );
   }
 
-  void addToHistory(String refId) async {
+  Future<void> addToHistory(String refId) async {
     await _fserve.appendDataIn(
       this,
       collection: "user-history",
@@ -37,7 +37,7 @@ class M3uEntry {
     );
   }
 
-  void removeFromHistory(String refId) async {
+  Future<void> removeFromHistory(String refId) async {
     await _fserve.removeDataIn(
       this,
       collection: "user-history",

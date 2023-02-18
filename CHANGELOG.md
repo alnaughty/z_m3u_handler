@@ -46,3 +46,4 @@
 ## 0.1.1
 
 * fixed firebase single create
+* made m3uentry process to future
