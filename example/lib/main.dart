@@ -1,7 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:z_m3u_handler/z_m3u_handler.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -35,24 +38,29 @@ class _MyHomePageState extends State<MyHomePage> {
   int val = 0;
   Future n() async {
     print("DOWN");
-    await _handler.network(
-        // "https://iptv-org.github.io/iptv/countries/fr.m3u",
-        // "/data/user/0/com.example.example/files/M3UDATA/data.m3u",
-        "http://infinity-ott.com:8080/get.php?username=RY05xSsev4z7BRQc&password=qSwUcugDcsgxQQ9s&type=m3u_plus&output=mpegts",
-        (value) {
-      print("DOWNLOADING $value%");
-      val = value.toInt();
-      if (mounted) setState(() {});
-    }, onExtractionCallback: (d) {
-      print("EXTRACTED : $d%");
-    }).then((value) {
-      print("M3u VLAUE: $value");
-      val = 0;
-      if (mounted) setState(() {});
-    }).onError((error, stackTrace) {
-      print("ERROR : $error");
-      print("Stacktrace : $stackTrace");
+    await _handler
+        .getDataFrom(type: CollectionType.favorites, refId: "faa5af21f904361c")
+        .then((value) {
+      print("DATA VALUE: $value");
     });
+    // await _handler.network(
+    //     // "https://iptv-org.github.io/iptv/countries/fr.m3u",
+    //     // "/data/user/0/com.example.example/files/M3UDATA/data.m3u",
+    //     "http://infinity-ott.com:8080/get.php?username=RY05xSsev4z7BRQc&password=qSwUcugDcsgxQQ9s&type=m3u_plus&output=mpegts",
+    //     (value) {
+    //   print("DOWNLOADING $value%");
+    //   val = value.toInt();
+    //   if (mounted) setState(() {});
+    // }, onExtractionCallback: (d) {
+    //   print("EXTRACTED : $d%");
+    // }).then((value) {
+    //   print("M3u VLAUE: $value");
+    //   val = 0;
+    //   if (mounted) setState(() {});
+    // }).onError((error, stackTrace) {
+    //   print("ERROR : $error");
+    //   print("Stacktrace : $stackTrace");
+    // });
   }
 
   Future<void> _r() async {

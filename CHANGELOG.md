@@ -38,3 +38,7 @@
 * added classifier
 * export [ClassifiedData] object
 * changed [CategorizedData] return type for movie & series
+
+## 0.1.0
+
+* fixed firebase fetching error

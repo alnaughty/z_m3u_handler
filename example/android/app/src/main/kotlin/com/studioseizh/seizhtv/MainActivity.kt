@@ -1,4 +1,4 @@
-package com.example.example
+package com.studioseizh.seizhtv
 
 import io.flutter.embedding.android.FlutterActivity
 

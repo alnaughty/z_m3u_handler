@@ -61,9 +61,9 @@ class M3uFirestoreServices {
   Future<CategorizedM3UData?> getDataFrom(String refId,
       {required String collection}) async {
     try {
-      if (!(await docExists(refId))) {
+      if (!(await docExistsIn(refId, collection: collection))) {
         print("NOT EXIST!");
-        await createFavoriteXHistory(refId);
+        await createDataIn(refId, collection);
         return CategorizedM3UData.empty();
       }
       CollectionReference _data =
@@ -71,20 +71,21 @@ class M3uFirestoreServices {
       // final Map<String, dynamic> ff = {};
       final DocumentSnapshot docu = await _data.doc(refId).get();
       final Map dataa = docu.data()! as Map;
+      print("DATA FROM FIRESTORE : $dataa");
       if (dataa.isEmpty) {
         return CategorizedM3UData.empty();
       }
-      final List<M3uEntry> _mov = (dataa['movie'] as List)
+      final List<M3uEntry> _mov = ((dataa['movie'] ?? []) as List)
           .map(
             (e) => M3uEntry.fromFirestore(e, 2),
           )
           .toList();
-      final List<M3uEntry> _ser = (dataa['series'] as List)
+      final List<M3uEntry> _ser = ((dataa['series'] ?? []) as List)
           .map(
             (e) => M3uEntry.fromFirestore(e, 3),
           )
           .toList();
-      final List<M3uEntry> _live = (dataa['live'] as List)
+      final List<M3uEntry> _live = ((dataa['live'] ?? []) as List)
           .map(
             (e) => M3uEntry.fromFirestore(e, 1),
           )
@@ -94,8 +95,10 @@ class M3uFirestoreServices {
         movies: _mov.classify(),
         series: _ser.classify(),
       );
-    } catch (e) {
-      return null;
+    } catch (e, s) {
+      print("ERROR FETCHING : $e");
+      print("STACK : $s");
+      return CategorizedM3UData.empty();
     }
   }
 
@@ -118,6 +121,14 @@ class M3uFirestoreServices {
     }
   }
 
+  Future<String?> createDataIn(String refId, String collection) async {
+    final Map body = {"live": [], "movie": [], "series": []};
+    CollectionReference data =
+        FirebaseFirestore.instance.collection(collection);
+    data.doc(refId).set(body);
+    return "success";
+  }
+
   Future<String?> createFavoriteXHistory(
     String refId,
   ) async {
@@ -135,6 +146,20 @@ class M3uFirestoreServices {
       return null;
     } catch (e) {
       return null;
+    }
+  }
+
+  Future<bool> docExistsIn(refId, {required String collection}) async {
+    try {
+      CollectionReference data =
+          FirebaseFirestore.instance.collection(collection);
+      return await data.doc(refId).get().then((value) => value.exists);
+      // CollectionReference history =
+      //     FirebaseFirestore.instance.collection('user-history');
+      // return await fav.doc(refId).get().then((value) => value.exists) &&
+      //     await history.doc(refId).get().then((value) => value.exists);
+    } catch (e) {
+      return false;
     }
   }
 
