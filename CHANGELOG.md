@@ -42,3 +42,7 @@
 ## 0.1.0
 
 * fixed firebase fetching error
+
+## 0.1.1
+
+* fixed firebase single create
