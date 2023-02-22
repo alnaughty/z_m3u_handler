@@ -47,3 +47,8 @@
 
 * fixed firebase single create
 * made m3uentry process to future
+
+## 0.1.2
+
+* added firebase povider auth
+* added [CredentialProvider] as return type for auth

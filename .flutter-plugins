@@ -1,8 +1,11 @@
 # This is a generated file; do not edit or check into version control.
 cloud_firestore=/Users/qonvexmacmini/.pub-cache/hosted/pub.dev/cloud_firestore-4.3.1/
 cloud_firestore_web=/Users/qonvexmacmini/.pub-cache/hosted/pub.dev/cloud_firestore_web-3.2.1/
-firebase_core=/Users/qonvexmacmini/.pub-cache/hosted/pub.dev/firebase_core-2.4.1/
-firebase_core_web=/Users/qonvexmacmini/.pub-cache/hosted/pub.dev/firebase_core_web-2.1.0/
+firebase_auth=/Users/qonvexmacmini/.pub-cache/hosted/pub.dev/firebase_auth-4.2.9/
+firebase_auth_web=/Users/qonvexmacmini/.pub-cache/hosted/pub.dev/firebase_auth_web-5.2.8/
+firebase_core=/Users/qonvexmacmini/.pub-cache/hosted/pub.dev/firebase_core-2.7.0/
+firebase_core_web=/Users/qonvexmacmini/.pub-cache/hosted/pub.dev/firebase_core_web-2.2.1/
+fluttertoast=/Users/qonvexmacmini/.pub-cache/hosted/pub.dev/fluttertoast-8.2.1/
 path_provider=/Users/qonvexmacmini/.pub-cache/hosted/pub.dev/path_provider-2.0.12/
 path_provider_android=/Users/qonvexmacmini/.pub-cache/hosted/pub.dev/path_provider_android-2.0.22/
 path_provider_foundation=/Users/qonvexmacmini/.pub-cache/hosted/pub.dev/path_provider_foundation-2.1.1/

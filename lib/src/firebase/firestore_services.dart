@@ -175,4 +175,15 @@ class M3uFirestoreServices {
       return false;
     }
   }
+
+  Future<String?> getUrl(String docRefId) async {
+    try {
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('user-data');
+      final DocumentSnapshot docu = await users.doc(docRefId).get();
+      return docu.get("url");
+    } catch (e) {
+      return null;
+    }
+  }
 }
