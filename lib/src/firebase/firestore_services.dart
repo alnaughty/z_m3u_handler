@@ -98,6 +98,7 @@ class M3uFirestoreServices {
     } catch (e, s) {
       print("ERROR FETCHING : $e");
       print("STACK : $s");
+      await createDataIn(refId, collection);
       return CategorizedM3UData.empty();
     }
   }
