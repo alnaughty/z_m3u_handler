@@ -52,3 +52,7 @@
 
 * added firebase povider auth
 * added [CredentialProvider] as return type for auth
+
+## 0.1.3
+
+* create on error firebase database
