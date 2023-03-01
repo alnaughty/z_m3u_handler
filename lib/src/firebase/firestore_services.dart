@@ -123,10 +123,12 @@ class M3uFirestoreServices {
   }
 
   Future<String?> createDataIn(String refId, String collection) async {
-    final Map<dynamic, dynamic> body = {"live": [], "movie": [], "series": []};
+    final Map<String, dynamic> body = {"live": [], "movie": [], "series": []};
     CollectionReference data =
         FirebaseFirestore.instance.collection(collection);
-    data.doc(refId).set(body);
+    data.doc(refId).set(
+          body,
+        );
     return "success";
   }
 
