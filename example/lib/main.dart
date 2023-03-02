@@ -43,12 +43,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Future n() async {
     print("DOWN");
     // await _fs.getUrl("ExLJMTouWgMwpvYKoQI29xmlI382").then(print);
-    await _au.login("test@test.com", "123123").then(print);
-    // await _handler
-    //     .getDataFrom(type: CollectionType.favorites, refId: "faa5af21f904361c")
-    //     .then((value) {
-    //   print("DATA VALUE: $value");
-    // });
+    // await _au.login("test@test.com", "123123").then(print);
+    await _handler
+        .getDataFrom(type: CollectionType.favorites, refId: "faa5af21f904361c")
+        .then((value) {
+      print("DATA VALUE: $value");
+    });
     // await _handler.network(
     //     // "https://iptv-org.github.io/iptv/countries/fr.m3u",
     //     // "/data/user/0/com.example.example/files/M3UDATA/data.m3u",
