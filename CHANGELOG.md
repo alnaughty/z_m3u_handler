@@ -59,4 +59,8 @@
 
 ## 0.1.4
 
-* f
+* fix minor issue on firestore
+
+## 0.1.5
+
+* fixed classifier on firestore

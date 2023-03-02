@@ -1,10 +1,23 @@
+import 'package:z_m3u_handler/src/helpers/db_regx.dart';
 import 'package:z_m3u_handler/src/models/classified_data.dart';
 import 'package:z_m3u_handler/src/models/m3u_entry.dart';
 
 extension SORTER on List<M3uEntry> {
-  Map<String, List<M3uEntry>> categorize({required String needle}) {
+  static final DBRegX dbRegX = DBRegX();
+  Map<String, List<M3uEntry>> categorize(
+      {bool fromTitle = false, required String needle}) {
     return fold(<String, List<M3uEntry>>{}, (acc, current) {
-      final property = current.attributes[needle] ?? "tvg-id";
+      // if (fromTitle) {
+      //   return;
+      // }
+      final String property = fromTitle
+          ? current.title
+              .toString()
+              .replaceAll(dbRegX.season, "")
+              .replaceAll(dbRegX.episode, "")
+              .replaceAll(dbRegX.epAndSe, "")
+              .trim()
+          : current.attributes[needle] ?? current.attributes["tvg-id"]!;
 
       if (!acc.containsKey(property)) {
         acc[property] = [current];
@@ -18,9 +31,10 @@ extension SORTER on List<M3uEntry> {
   List<M3uEntry> categorizeType(int type) =>
       where((element) => element.type == type).toList();
 
-  List<ClassifiedData> classify() {
+  List<ClassifiedData> classify({bool fromTitle = false}) {
     try {
-      Map<String, List<M3uEntry>> folded = categorize(needle: 'title-clean');
+      Map<String, List<M3uEntry>> folded =
+          categorize(needle: 'title-clean', fromTitle: fromTitle);
       final List<ClassifiedData> __res = folded.entries
           .map(
             (e) => ClassifiedData(

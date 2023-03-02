@@ -1,6 +1,6 @@
 name: z_m3u_handler
 description: Flutter package used to to handle m3u data with firestore(for favorites and history) and local databases.
-version: 0.1.4
+version: 0.1.5
 
 environment:
   sdk: ">=2.18.6 <3.0.0"
