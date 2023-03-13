@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:z_m3u_handler/extension.dart';
 import 'package:z_m3u_handler/src/models/categorized_m3u_data.dart';
 import 'package:z_m3u_handler/src/models/m3u_entry.dart';
+export 'package:cloud_firestore/cloud_firestore.dart';
 
 class M3uFirestoreServices {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
