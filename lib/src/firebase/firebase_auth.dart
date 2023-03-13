@@ -15,7 +15,7 @@ class M3uFirebaseAuthService {
     try {
       final UserCredential credential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailAddress,
+        email: "$emailAddress@seizhtv.com",
         password: password,
       );
       if (credential.user == null) return null;
