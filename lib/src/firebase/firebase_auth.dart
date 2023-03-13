@@ -31,7 +31,7 @@ class M3uFirebaseAuthService {
         Fluttertoast.showToast(msg: "Password provided is too weak");
       } else if (e.code == 'email-already-in-use') {
         print('The account already exists for that email.');
-        Fluttertoast.showToast(msg: "The email provided is already in use");
+        Fluttertoast.showToast(msg: "The account provided is already existing");
       } else {
         Fluttertoast.showToast(
             msg: "An undefined authentication error has occurred.");
