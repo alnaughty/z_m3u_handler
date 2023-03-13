@@ -4,7 +4,7 @@ import 'package:z_m3u_handler/z_m3u_handler.dart';
 class CategorizedM3UData {
   final List<ClassifiedData> series;
   final List<ClassifiedData> movies;
-  final List<M3uEntry> live;
+  final List<ClassifiedData> live;
 
   const CategorizedM3UData(
       {required this.live, required this.movies, required this.series});

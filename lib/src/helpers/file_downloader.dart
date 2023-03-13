@@ -12,7 +12,7 @@ class FileDownloader {
   }
 
   Future<File?> downloadFile(
-      String url, ValueChanged<double> downloadProgress) async {
+      String url, ValueChanged<double>? downloadProgress) async {
     try {
       String? path = await savePath;
       if (path == null) return null;
@@ -22,15 +22,18 @@ class FileDownloader {
       print(url.replaceAll("http://", ""));
       return await _dio
           .downloadUri(Uri.parse(url), "${downloadDir.path}/data.m3u",
-              onReceiveProgress: (int received, int total) {
-        if (total != -1) {
-          downloadProgress(
-            double.parse(
-              (received / total * 100).floor().toString(),
-            ),
-          );
-        }
-      }).then((response) async {
+              onReceiveProgress: downloadProgress != null
+                  ? (int received, int total) {
+                      if (total != -1) {
+                        downloadProgress(
+                          double.parse(
+                            (received / total * 100).floor().toString(),
+                          ),
+                        );
+                      }
+                    }
+                  : null)
+          .then((response) async {
         if (response.statusCode == 200) {
           File ff = File("${downloadDir.path}/data.m3u");
           print(ff.path);

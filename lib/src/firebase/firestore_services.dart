@@ -30,6 +30,12 @@ class M3uFirestoreServices {
 
   /// refId is the same as userId
   /// This can be used in fav or history
+  Stream<DocumentSnapshot<Object?>> getListener(
+      {required String collection, required String docId}) {
+    CollectionReference _data =
+        FirebaseFirestore.instance.collection(collection);
+    return _data.doc(docId).snapshots(includeMetadataChanges: true);
+  }
 
   Future<bool> appendDataIn(
     M3uEntry entry, {
@@ -91,9 +97,9 @@ class M3uFirestoreServices {
           )
           .toList();
       return CategorizedM3UData(
-        live: _live,
-        movies: _mov.classify(fromTitle: true),
-        series: _ser.classify(fromTitle: true),
+        live: _live.sortedCategories(attributeName: "group-title"),
+        movies: _mov.sortedCategories(attributeName: "group-title"),
+        series: _ser.sortedCategories(attributeName: "group-title"),
       );
     } catch (e, s) {
       print("ERROR FETCHING : $e");

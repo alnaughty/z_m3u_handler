@@ -12,6 +12,21 @@ class M3uParser {
   LineParsedType _nextLineExpected = LineParsedType.header;
 
   EntryInfo? _currentInfoEntry;
+
+  static Map<String, List<M3uEntry>> sortedCategories(
+          {required List<M3uEntry> entries,
+          required String attributeName,
+          String defaultAttribute = 'other'}) =>
+      entries.fold(<String, List<M3uEntry>>{}, (acc, current) {
+        final property = current.attributes[attributeName] ?? defaultAttribute;
+
+        if (!acc.containsKey(property)) {
+          acc[property] = [current];
+        } else {
+          acc[property]!.add(current);
+        }
+        return acc;
+      });
   final List<M3uEntry> _playlist = <M3uEntry>[];
   Future<List<M3uEntry>> _parse(String source) async {
     LineSplitter.split(source).forEach(_parseLine);

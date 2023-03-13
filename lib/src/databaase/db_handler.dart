@@ -15,7 +15,7 @@ class DBHandler with DBRegX {
   static Database? _database;
   Future<Database> get database async => _database ??= await _initDB();
   static DBHandler get instance => _instance;
-
+  // database.batch();
   Future<Database> _initDB() async {
     Directory documentsDir = await getApplicationDocumentsDirectory();
     String path = join(documentsDir.path, "m3u.db");
@@ -27,11 +27,16 @@ class DBHandler with DBRegX {
     );
   }
 
+  Future<Batch> batch() async {
+    final Database _db = await database;
+    return _db.batch();
+  }
+
   Future _onCreate(Database db, int version) async {
     await db.execute(
         'CREATE TABLE categories(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)');
     await db.execute(
-        'CREATE TABLE entries(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, link TEXT NOT NULL, duration INTEGER NULL, image TEXT NULL, category_id INT NOT NULL, type INT NOT NULL, FOREIGN KEY (category_id) REFERENCES categories (id))');
+        'CREATE TABLE entries(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, link TEXT NOT NULL, duration INTEGER NULL, image TEXT NULL, category_id INT NOT NULL, type INT NOT NULL, FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE)');
   }
 
   Future<void> clearTable() async {
@@ -43,90 +48,89 @@ class DBHandler with DBRegX {
     // await db.rawDelete("DELETE * FROM entries");
   }
 
-  Future<int> addEntry(int catId, M3uEntry entry) async {
-    try {
-      final Database db = await instance.database;
-      Map<String, dynamic> data = entry.toDBObj();
-      data.addAll({
-        "category_id": catId,
-      });
-      if (entry.link.isNotEmpty) {
-        int type = entry.link.getType;
-        // if (type == 0 || type == 1) {
-        //   print("LIVE FOUND!");
-        // } else if (type == 2) {
-        //   print("SERIES FOUND!");
-        // } else {
-        //   print("MOVIE FOUND!");
-        // }
-        data.addAll({
-          "type": type,
-        });
-      } else {
-        data.addAll({"type": 0});
-      }
-      return await db.insert(
-        "entries",
-        data,
-      );
-    } catch (e) {
-      print("ERROR APPENDING DATA");
-      return -1;
-    }
-  }
+  // Future<int> addEntry(int catId, M3uEntry entry) async {
+  //   try {
+  //     final Database db = await instance.database;
+  //     Map<String, dynamic> data = entry.toDBObj();
+  //     data.addAll({
+  //       "category_id": catId,
+  //     });
+  //     if (entry.link.isNotEmpty) {
+  //       int type = entry.link.getType;
+  //       data.addAll({
+  //         "type": type,
+  //       });
+  //     } else {
+  //       data.addAll({"type": 0});
+  //     }
+  //     return await db.insert(
+  //       "entries",
+  //       data,
+  //     );
+  //   } catch (e) {
+  //     print("ERROR APPENDING DATA");
+  //     return -1;
+  //   }
+  // }
 
-  Future<int> addCategory(String name) async {
-    try {
-      final Database db = await instance.database;
-      return await db.insert("categories", {
-        "name": name,
-      });
-    } catch (e) {
-      return -1;
-    }
-  }
+  // Future<int> addCategory(String name) async {
+  //   try {
+  //     final Database db = await instance.database;
+  //     return await db.insert("categories", {
+  //       "name": name,
+  //     });
+  //   } catch (e) {
+  //     return -1;
+  //   }
+  // }
 
   Future<CategorizedM3UData?> getData() async {
     try {
       final Database db = await instance.database;
-      final List data = await db.rawQuery("SELECT *  FROM categories");
-      List<M3uEntry> allData = [];
-      for (Map<String, dynamic> datum in data) {
-        final List e = await db.rawQuery(
-          "SELECT *  FROM entries WHERE category_id = ${datum['id']}",
-        );
-        final List<M3uEntry> entry = e
-            .map(
-              (e) => M3uEntry.fromEntryInformation(
-                link: e['link'],
-                information: EntryInfo(
-                  attributes: {
-                    "tvg-logo": e['image'],
-                    "group-title": datum['title'],
-                    "title-clean": e['title']
-                        .toString()
-                        .replaceAll(season, "")
-                        .replaceAll(episode, "")
-                        .replaceAll(epAndSe, "")
-                        .trim(),
-                  },
-                  duration: e['duration'],
-                  title: e['title'],
-                ),
-                type: e['type'] ?? 0,
-              ),
-            )
-            .toList();
-        allData += entry;
-        // series = __data.categorizeType(3);
-      }
-      return CategorizedM3UData(
-        live: allData.where((element) => element.type <= 1).toList(),
-        movies:
-            allData.where((element) => element.type == 2).toList().classify(),
-        series:
-            allData.where((element) => element.type == 3).toList().classify(),
-      );
+      final List<Map<String, dynamic>> categoryEntries = await db.rawQuery('''
+        SELECT categories.name as category_name, entries.title as entry_title
+        FROM categories
+        LEFT JOIN entries ON categories.id = entries.category_id
+      ''');
+      print(categoryEntries);
+      // final List data = await db.rawQuery("SELECT *  FROM categories");
+      // List<M3uEntry> allData = [];
+      // for (Map<String, dynamic> datum in data) {
+      //   final List e = await db.rawQuery(
+      //     "SELECT *  FROM entries WHERE category_id = ${datum['id']}",
+      //   );
+      //   final List<M3uEntry> entry = e
+      //       .map(
+      //         (e) => M3uEntry.fromEntryInformation(
+      //           link: e['link'],
+      //           information: EntryInfo(
+      //             attributes: {
+      //               "tvg-logo": e['image'],
+      //               "group-title": datum['title'],
+      //               "title-clean": e['title']
+      //                   .toString()
+      // .replaceAll(season, "")
+      // .replaceAll(episode, "")
+      // .replaceAll(epAndSe, "")
+      // .trim(),
+      //             },
+      //             duration: e['duration'],
+      //             title: e['title'],
+      //           ),
+      //           type: e['type'] ?? 0,
+      //         ),
+      //       )
+      //       .toList();
+      //   allData += entry;
+      //   // series = __data.categorizeType(3);
+      // }
+      // return CategorizedM3UData(
+      //   live: allData.where((element) => element.type <= 1).toList(),
+      //   movies:
+      //       allData.where((element) => element.type == 2).toList().classify(),
+      //   series:
+      //       allData.where((element) => element.type == 3).toList().classify(),
+      // );
     } catch (e) {
       print("ERROR FETCHING DATA FROM DB");
       return null;

@@ -1,9 +1,28 @@
 import 'package:z_m3u_handler/src/helpers/db_regx.dart';
+import 'package:z_m3u_handler/src/helpers/parser.dart';
 import 'package:z_m3u_handler/src/models/classified_data.dart';
 import 'package:z_m3u_handler/src/models/m3u_entry.dart';
 
 extension SORTER on List<M3uEntry> {
   static final DBRegX dbRegX = DBRegX();
+  List<ClassifiedData> sortedCategories(
+      {required String attributeName, String defaultAttribute = 'other'}) {
+    final List<M3uEntry> entries = List.from(this);
+    final Map<String, List<M3uEntry>> _sorted = M3uParser.sortedCategories(
+      entries: entries,
+      attributeName: attributeName,
+      defaultAttribute: defaultAttribute,
+    );
+    final List<ClassifiedData> _f = [];
+    // for (MapEntry entry in _sorted.entries) {}
+    _sorted.forEach((key, value) {
+      _f.add(
+        ClassifiedData(name: key, data: value),
+      );
+    });
+    return _f;
+  }
+
   Map<String, List<M3uEntry>> categorize(
       {bool fromTitle = false, required String needle}) {
     return fold(<String, List<M3uEntry>>{}, (acc, current) {
@@ -28,8 +47,8 @@ extension SORTER on List<M3uEntry> {
     });
   }
 
-  List<M3uEntry> categorizeType(int type) =>
-      where((element) => element.type == type).toList();
+  // List<M3uEntry> categorizeType(int type) =>
+  //     where((element) => element.type == type).toList();
 
   List<ClassifiedData> classify({bool fromTitle = false}) {
     try {
