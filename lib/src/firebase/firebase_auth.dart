@@ -15,7 +15,7 @@ class M3uFirebaseAuthService {
     try {
       final UserCredential credential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: "$emailAddress@seizhtv.com",
+        email: emailAddress,
         password: password,
       );
       if (credential.user == null) return null;
@@ -69,8 +69,8 @@ class M3uFirebaseAuthService {
   Future<CredentialProvider?> login(
       String emailAddress, String password) async {
     try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: "$emailAddress@seizhtv.com", password: password);
+      final credential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: emailAddress, password: password);
       final User? user = credential.user;
       if (user == null) return null;
       // fireuserId = credential.user!.uid;
