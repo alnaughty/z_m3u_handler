@@ -97,7 +97,7 @@ class M3uFirebaseAuthService {
   Future<bool> deleteAccount({User? current}) async {
     try {
       if (current == null) {
-        final FirebaseAuth _auth = await FirebaseAuth.instance;
+        final FirebaseAuth _auth = FirebaseAuth.instance;
         if (_auth.currentUser == null) {
           Fluttertoast.showToast(msg: "No logged user found!");
           return false;
