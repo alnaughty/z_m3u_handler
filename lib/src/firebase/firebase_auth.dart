@@ -45,6 +45,27 @@ class M3uFirebaseAuthService {
     }
   }
 
+  Future<bool> forgotPassword(String emailAddress) async {
+    try {
+      final credential = await FirebaseAuth.instance
+          .sendPasswordResetEmail(email: emailAddress);
+      return true;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('User not found');
+        Fluttertoast.showToast(msg: "User not found");
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+        Fluttertoast.showToast(msg: "Incorrect password");
+      }
+      return false;
+    } catch (e) {
+      print(e);
+      Fluttertoast.showToast(msg: "An error has occurred while processing");
+      return false;
+    }
+  }
+
   Future<CredentialProvider?> login(
       String emailAddress, String password) async {
     try {
@@ -70,6 +91,21 @@ class M3uFirebaseAuthService {
       print(e);
       Fluttertoast.showToast(msg: "An error has occurred while processing");
       return null;
+    }
+  }
+
+  Future<bool> deleteAccount() async {
+    try {
+      final FirebaseAuth _auth = await FirebaseAuth.instance;
+      if (_auth.currentUser == null) {
+        Fluttertoast.showToast(msg: "No logged-in user found!");
+        return false;
+      }
+      await _auth.currentUser!.delete();
+      Fluttertoast.showToast(msg: "Account deleted!");
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 

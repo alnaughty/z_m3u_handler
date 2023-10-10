@@ -1,3 +1,7 @@
+## 1.0.0
+
+* Added delete function on firebase auth, [DELETION_OF_THE_CURRENT_LOGGED_USER]
+
 ## 0.0.1
 
 * TODO: Describe initial release.
