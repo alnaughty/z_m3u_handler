@@ -94,14 +94,19 @@ class M3uFirebaseAuthService {
     }
   }
 
-  Future<bool> deleteAccount() async {
+  Future<bool> deleteAccount({User? current}) async {
     try {
-      final FirebaseAuth _auth = await FirebaseAuth.instance;
-      if (_auth.currentUser == null) {
-        Fluttertoast.showToast(msg: "No logged-in user found!");
-        return false;
+      if (current == null) {
+        final FirebaseAuth _auth = await FirebaseAuth.instance;
+        if (_auth.currentUser == null) {
+          Fluttertoast.showToast(msg: "No logged user found!");
+          return false;
+        }
+        await _auth.currentUser!.delete();
+        Fluttertoast.showToast(msg: "Account deleted!");
+        return true;
       }
-      await _auth.currentUser!.delete();
+      await current.delete();
       Fluttertoast.showToast(msg: "Account deleted!");
       return true;
     } catch (e) {
